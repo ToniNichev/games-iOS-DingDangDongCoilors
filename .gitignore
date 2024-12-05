@@ -1,0 +1,92 @@
+# Xcode
+.DS_Store
+build/
+*.xcworkspace
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+*.xcuserdatad
+DerivedData/
+.idea/
+
+# Swift Package Manager
+/.build
+/Package.resolved
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+Carthage/Checkouts/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/*.lock
+
+# Archives
+*.xcarchive
+
+# Temporary files
+*.swp
+*.tmp
+*.lock
+
+# Logs
+*.log
+*.tlog
+
+# Generated files
+*.plist
+*.dSYM
+*.bplist
+
+# Simulator files
+*.simstate
+
+# macOS
+*.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Thumbnails
+._*
+._.DS_Store
+
+# SwiftLint
+.swiftlint.yml
+
+# Test output
+*.gcda
+*.gcno
+*.gcov
+
+# Swift Playgrounds
+timeline
+playground.xcworkspace
+playground.swiftpm/
+
+# Other metadata
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# Firebase
+GoogleService-Info.plist
+
+# Environment-specific files
+*.env
+.env.*
+
+# Secrets
+*.key
+*.pem
+*.crt
+*.cert
+
