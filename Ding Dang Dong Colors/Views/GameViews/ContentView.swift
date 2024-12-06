@@ -9,12 +9,24 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var gameStats = GameStats()
+    @State private var showGameOverOverlay = false
     
     var body: some View {
-        if gameStats.gameOver {
-            GameOverView()
-        } else {
+        ZStack {
             GameView(gameStats: $gameStats)
+                .opacity(showGameOverOverlay ? 0.0 : 1.0)
+                .animation(.easeInOut(duration: 1.0), value: showGameOverOverlay)
+
+            if showGameOverOverlay {
+                GameOverView()
+            }
+        }
+        .onChange(of: gameStats.gameOver) { isGameOver in
+            if isGameOver {
+                withAnimation {
+                    showGameOverOverlay = true
+                }
+            }
         }
     }
 }
