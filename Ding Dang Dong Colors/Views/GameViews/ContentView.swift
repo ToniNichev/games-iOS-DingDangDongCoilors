@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var gameStats = GameStats()
+    
     var body: some View {
-        GameView()
+        if gameStats.gameOver {
+            GameOverView()
+        } else {
+            GameView(gameStats: $gameStats)
+        }
     }
 }
 

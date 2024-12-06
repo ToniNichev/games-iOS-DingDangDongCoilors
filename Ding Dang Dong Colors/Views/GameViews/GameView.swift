@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GameView: View {
-    @State private var gameStats = GameStats()
+    @Binding var gameStats: GameStats
     @State private var circleCount = 5
     @State private var minesCount = 3
     
@@ -90,5 +90,6 @@ struct GameView: View {
 }
 
 #Preview {
-    GameView()
+    @Previewable @State var gameStats = GameStats()
+    GameView(gameStats: $gameStats)
 }
