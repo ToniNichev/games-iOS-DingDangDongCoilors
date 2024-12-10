@@ -87,6 +87,11 @@ struct GameView: View {
         }
              
     }
+    
+    func resetGame() {
+        circleCount = 5
+        minesCount = 3
+    }
 }
 
 #Preview {

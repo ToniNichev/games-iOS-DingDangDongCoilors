@@ -18,16 +18,24 @@ struct ContentView: View {
                 .animation(.easeInOut(duration: 1.0), value: showGameOverOverlay)
 
             if showGameOverOverlay {
-                GameOverView()
+                GameOverView() {
+                    RestartGame()
+                }
             }
         }
-        .onChange(of: gameStats.gameOver) { isGameOver in
-            if isGameOver {
+        .onChange(of: gameStats.gameOver, initial: true) {
+            if gameStats.gameOver {
                 withAnimation {
                     showGameOverOverlay = true
                 }
             }
         }
+    }
+    
+    func RestartGame() {
+        print("!")
+        gameStats.resetGame()
+        showGameOverOverlay = false
     }
 }
 

@@ -38,4 +38,11 @@ struct GameStats {
     mutating func gainLife() {
         lives = min(maxLives, lives + 1)
     }
+    
+    mutating func resetGame() {
+        score = 0
+        level = 1
+        lives = maxLives
+        gameOver = false
+    }
 }

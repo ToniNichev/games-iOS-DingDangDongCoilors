@@ -2,43 +2,37 @@ import SwiftUI
 
 struct GameOverView: View {
     @State private var showGameOverContent = false
-    @State private var backgroundOpacity = 0.0
+    @State private var backgroundOpacity = 0.8
+    let RestartGameAction: () -> Void
     
     var body: some View {
         ZStack {
-            // Darkening background
-            LinearGradient(
-                gradient: Gradient(colors: [.black.opacity(0), .black]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .opacity(backgroundOpacity)
-            .edgesIgnoringSafeArea(.all)
-            .animation(.easeInOut(duration: 1.0), value: backgroundOpacity)
+            // Full-screen dark overlay with animated opacity
+            Color.black
+                .opacity(backgroundOpacity)
+                .edgesIgnoringSafeArea(.all)
+                .animation(.easeInOut(duration: 1.0), value: backgroundOpacity)
             
+            // "Game Over" text that appears after the background fades in
             if showGameOverContent {
-                mainGameOverContent
-            } else {
-                GameOverAnimationView {
-                    withAnimation {
-                        showGameOverContent = true
-                        backgroundOpacity = 1.0
-                    }
+                GameOverContentView() {
+                    RestartGameAction()
                 }
             }
         }
-    }
-    
-    var mainGameOverContent: some View {
-        VStack {
-            Text("Game Over")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
+        .onAppear {
+            // After a delay, show the "Game Over" text
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation {
+                    showGameOverContent = true
+                }
+            }
         }
     }
 }
 
 #Preview {
-    GameOverView()
+    GameOverView() {
+        print("Restarting game ...")
+    }
 }
