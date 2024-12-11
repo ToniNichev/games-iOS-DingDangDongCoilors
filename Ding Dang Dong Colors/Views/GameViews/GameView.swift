@@ -9,8 +9,9 @@ import SwiftUI
 
 struct GameView: View {
     @Binding var gameStats: GameStats
-    @State private var circleCount = 5
-    @State private var minesCount = 3
+
+    @State private var circleCount : Int = 1
+    @State private var minesCount : Int = 1
     
     var movementSpeed: Double {
         max(0.5, 2.5 - Double(gameStats.level) * 0.3) // Faster speed as score increases
@@ -19,11 +20,25 @@ struct GameView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-
                 createBackground()
                 createCircles()
                 createMines()
                 createScoreView().opacity(0.8)
+                VStack {
+                    Spacer()
+                    Text("\(circleCount)")
+                }
+            }
+            .onAppear() {
+                resetGame()
+            }
+            .onChange(of: gameStats.gameOver, initial: true) {
+                if gameStats.gameOver {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        // delay reseting the game so it won't show more circles during fade effect
+                        resetGame()
+                    }
+                }
             }
         }
     }
@@ -59,7 +74,8 @@ struct GameView: View {
             maxRadius: 100,
             animationType: .linear(duration: movementSpeed),
             removeCircleOnTapped: false,
-            fixedCircleColor: .black)
+            fixedCircleColor: .black
+        )
         { circle in
             gameStats.decrementScore(by: circle.points)
             gameStats.loseLife()
@@ -82,6 +98,7 @@ struct GameView: View {
             
         } allCirclesCleared: {
             gameStats.advanceLevel()
+            circleCount =  gameStats.circlesCount +  (gameStats.level - 1)
             minesCount += 1
             
         }
@@ -89,8 +106,9 @@ struct GameView: View {
     }
     
     func resetGame() {
-        circleCount = 5
-        minesCount = 3
+        circleCount = gameStats.circlesCount
+        minesCount = gameStats.minesCount
+        gameStats.resetGame()
     }
 }
 

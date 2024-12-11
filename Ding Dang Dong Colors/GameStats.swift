@@ -6,6 +6,9 @@
 //
 
 struct GameStats {
+    let circlesCount = 1
+    let minesCount = 1
+    
     var score: Int = 0
     var level: Int = 1
     var lives: Int = 3

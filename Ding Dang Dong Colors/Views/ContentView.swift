@@ -9,17 +9,26 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var gameStats = GameStats()
-    @State private var showGameOverOverlay = false
+    @State private var showGameOverOverlay = true
+    @State private var showStartScreenOverlay = true
     
     var body: some View {
         ZStack {
-            GameView(gameStats: $gameStats)
+            GameView(
+                gameStats: $gameStats)
                 .opacity(showGameOverOverlay ? 0.0 : 1.0)
                 .animation(.easeInOut(duration: 1.0), value: showGameOverOverlay)
 
             if showGameOverOverlay {
-                GameOverView() {
-                    RestartGame()
+                if showStartScreenOverlay {
+                    StartScreenView() {
+                        showStartScreenOverlay = false
+                        RestartGame()
+                    }
+                } else {
+                    GameOverView() {
+                        RestartGame()
+                    }
                 }
             }
         }
@@ -40,5 +49,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    //ContentView
 }

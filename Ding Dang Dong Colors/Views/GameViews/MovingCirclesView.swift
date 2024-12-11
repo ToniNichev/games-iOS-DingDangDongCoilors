@@ -22,7 +22,7 @@ struct MovingCirclesView: View {
     
     var circlesCount: Int
     var movementInterval: Double
-    var minRadius = 10.0
+    var minRadius = 50.0
     var maxRadius = 120.0
     var animationType: Animation = .linear(duration: 4)
     var removeCircleOnTapped: Bool = true
@@ -65,7 +65,8 @@ struct MovingCirclesView: View {
                 }
             }
             .onAppear {
-                generateInitialCircles(bounds: geometry.size)
+                //generateInitialCircles(bounds: geometry.size)
+                //movingCircles = []
             }
             .onChange(of: circlesCount, initial: true, {
                 updateCircleCount(to: circlesCount, bounds: geometry.size)
@@ -106,14 +107,22 @@ struct MovingCirclesView: View {
     private func updateCircleCount(to newCount: Int, bounds: CGSize) {
         if newCount > movingCircles.count {
             let additionalCircles = generateRandomCircles(
-                count: newCount - movingCircles.count,
+                count: newCount,
                 bounds: bounds
             )
-            withAnimation(animationType) {
+            
+            // Increase animation speed dynamically
+            let fasterAnimation = Animation.linear(duration: movementInterval * 0.15)
+            withAnimation(fasterAnimation) {
                 movingCircles.append(contentsOf: additionalCircles)
             }
             // Immediately move newly added circles
             triggerImmediateMovement(bounds: bounds)
+        } else if newCount < movingCircles.count {
+            let excessCount = movingCircles.count - newCount
+            withAnimation(.easeInOut(duration: 0.5)) {
+                movingCircles.removeLast(excessCount)
+            }
         }
     }
 
@@ -123,8 +132,6 @@ struct MovingCirclesView: View {
         }
         if movingCircles.isEmpty {
             allCirclesCleared()
-            // Regenerate circles with immediate movement
-            updateCircleCount(to: circlesCount, bounds: bounds)
         }
     }
     
@@ -152,42 +159,28 @@ struct MovingCirclesView: View {
         }
     }
     
+    private func generateSingleCircle(bounds: CGSize) -> MovingCircle {
+        let x = Double.random(in: maxRadius...(bounds.width - maxRadius))
+        let y = Double.random(in: maxRadius...(bounds.height - maxRadius))
+        let radius = Double.random(in: minRadius...maxRadius)
+        let color =  fixedCircleColor ?? colors.randomElement()!
+        let points = Int.random(in: 5...10)
+        
+        return MovingCircle(
+            id: UUID(),
+            x: x,
+            y: y,
+            radius: radius,
+            color: color,
+            points: points)
+    }
+    
     
     func generateRandomCircles(count: Int, bounds: CGSize) -> [MovingCircle] {
         var circles: [MovingCircle] = []
         
         for _ in 0..<count {
-            var isOverlapping: Bool
-            var circle: MovingCircle
-            
-            repeat {
-                isOverlapping = false
-                let x = Double.random(in: maxRadius...(bounds.width - maxRadius))
-                let y = Double.random(in: maxRadius...(bounds.height - maxRadius))
-                let radius = Double.random(in: minRadius...maxRadius)
-                let color =  fixedCircleColor ?? colors.randomElement()!
-                let points = Int.random(in: 5...10)
-                
-                circle = MovingCircle(
-                    id: UUID(),
-                    x: x,
-                    y: y,
-                    radius: radius,
-                    color: color,
-                    points: points)
-                
-                for existingCircle in circles {
-                    let dx = existingCircle.x - circle.x
-                    let dy = existingCircle.y - circle.y
-                    let distance = sqrt(dx * dx + dy * dy)
-                    if distance < (existingCircle.radius + circle.radius) {
-                        isOverlapping = true
-                        break
-                    }
-                }
-            } while isOverlapping
-            
-            circles.append(circle)
+            circles.append( generateSingleCircle(bounds: bounds) )
         }
         return circles
     }
@@ -205,12 +198,14 @@ struct MovingCirclesView: View {
 }
 
 #Preview {
+    @Previewable @State var movementInterval = 1.0
+    
     MovingCirclesView(
         circlesCount: 5,
-        movementInterval: 2.0,
+        movementInterval: movementInterval,
         minRadius: 30,
         maxRadius: 100,
-        animationType: .linear(duration: 2.0),
+        animationType: .linear(duration: movementInterval),
         removeCircleOnTapped: true,
         fixedCircleColor: nil
     ) { circle in
