@@ -26,7 +26,7 @@ struct GameView: View {
                 createScoreView().opacity(0.8)
                 VStack {
                     Spacer()
-                    Text("\(circleCount)")
+                    Text("\(minesCount)")
                 }
             }
             .onAppear() {
@@ -70,7 +70,7 @@ struct GameView: View {
         MovingCirclesView(
             circlesCount: minesCount,
             movementInterval: movementSpeed,
-            minRadius: 30,
+            minRadius: 50,
             maxRadius: 100,
             animationType: .linear(duration: movementSpeed),
             removeCircleOnTapped: false,
@@ -89,17 +89,19 @@ struct GameView: View {
         return MovingCirclesView(
             circlesCount: circleCount,
             movementInterval: movementSpeed,
-            minRadius: 30,
+            minRadius: 50,
             maxRadius: 100,
             animationType: .linear(duration: movementSpeed)
         )
         { circle in
+            // circle tapped
             gameStats.incrementScore(by: circle.points)
             
         } allCirclesCleared: {
+            // Level up
             gameStats.advanceLevel()
             circleCount =  gameStats.circlesCount +  (gameStats.level - 1)
-            minesCount += 1
+            minesCount = gameStats.minesCount +  (gameStats.level - 1)
             
         }
              

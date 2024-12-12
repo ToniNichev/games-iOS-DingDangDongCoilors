@@ -106,8 +106,9 @@ struct MovingCirclesView: View {
     
     private func updateCircleCount(to newCount: Int, bounds: CGSize) {
         if newCount > movingCircles.count {
+            let count = newCount - movingCircles.count
             let additionalCircles = generateRandomCircles(
-                count: newCount,
+                count: count,
                 bounds: bounds
             )
             
