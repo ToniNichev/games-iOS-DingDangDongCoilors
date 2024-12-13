@@ -3,6 +3,7 @@ import SwiftUI
 struct GameOverView: View {
     @State private var showGameOverContent = false
     @State private var backgroundOpacity = 0.8
+    var gameStats: GameStats
     let RestartGameAction: () -> Void
     
     var body: some View {
@@ -15,7 +16,7 @@ struct GameOverView: View {
             
             // "Game Over" text that appears after the background fades in
             if showGameOverContent {
-                GameOverContentView() {
+                GameOverContentView(gameStats: gameStats) {
                     RestartGameAction()
                 }
             }
@@ -32,7 +33,10 @@ struct GameOverView: View {
 }
 
 #Preview {
-    GameOverView() {
+    
+    @Previewable @State var gameStats = GameStats()
+    
+    GameOverView(gameStats:gameStats) {
         print("Restarting game ...")
     }
 }

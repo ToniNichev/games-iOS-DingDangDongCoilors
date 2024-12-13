@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+enum AppState {
+    case startScreen
+    case gameView
+    case gameOver
+}
+
+
 struct ContentView: View {
     @State private var gameStats = GameStats()
     @State private var showGameOverOverlay = true
@@ -26,7 +33,7 @@ struct ContentView: View {
                         RestartGame()
                     }
                 } else {
-                    GameOverView() {
+                    GameOverView(gameStats: gameStats) {
                         RestartGame()
                     }
                 }
@@ -39,6 +46,10 @@ struct ContentView: View {
                 }
             }
         }
+    }
+    
+    func AppStateChange(newState: AppState) {
+        
     }
     
     func RestartGame() {

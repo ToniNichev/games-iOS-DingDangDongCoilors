@@ -10,6 +10,7 @@ import SwiftUI
 struct GameOverContentView: View {
     @State private var animationComplete = false
     @State private var showConfetti = false
+    var gameStats: GameStats
     let RestartGameAction: () -> Void
     
     var body: some View {
@@ -29,6 +30,7 @@ struct GameOverContentView: View {
                     .scaleEffect(showConfetti ? 1.1 : 1.0)
                     .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: showConfetti)
                 
+                createScoreView()
                 Spacer()
                 
                 VStack(spacing: 20) {
@@ -42,6 +44,8 @@ struct GameOverContentView: View {
                     
                     CustomButton(label: "Back To Start", colors:[.white, .purple], action:  {
                         print("2222")
+                        //showStartScreenOverlay = true
+                        //showGameOverOverlay = false
                     })
                 }
                 .padding()
@@ -51,10 +55,25 @@ struct GameOverContentView: View {
             showConfetti = true
         }
     }
+    
+    func createScoreView() -> some View {
+        VStack {
+            ScoreLevelView(
+                score: gameStats.score,
+                level: gameStats.level,
+                lives: gameStats.lives,
+                maxLives: gameStats.maxLives,
+                gradientColors: [.red, .green])
+            Spacer()
+            
+        }
+    }
 }
 
 #Preview {
-    GameOverContentView() {
+    @Previewable @State var gameStats = GameStats()
+    
+    GameOverContentView(gameStats: gameStats) {
         print("Restarting game ...")
     }
 }

@@ -47,18 +47,20 @@ struct ScoreLevelView: View {
                 }
             }
             
-            // Lives UI
-            VStack {
-                Text("Lives")
-                    .font(.caption)
-                    .foregroundColor(.white)
-                    .shadow(radius: 2)
-                ForEach(0..<maxLives, id: \.self) { index in
-                    Image(systemName: index < lives ? "heart.fill" : "heart")
-                        .foregroundColor(.red)
-                        .font(.system(size: 10))
+            if lives > 0 {
+                // Lives UI
+                VStack {
+                    Text("Lives")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                        .shadow(radius: 2)
+                    ForEach(0..<maxLives, id: \.self) { index in
+                        Image(systemName: index < lives ? "heart.fill" : "heart")
+                            .foregroundColor(.red)
+                            .font(.system(size: 10))
+                    }
+                    .padding(.top, 0.2)
                 }
-                .padding(.top, 0.2)
             }
 
         }

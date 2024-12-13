@@ -29,9 +29,6 @@ struct GameView: View {
                     Text("\(minesCount)")
                 }
             }
-            .onAppear() {
-                resetGame()
-            }
             .onChange(of: gameStats.gameOver, initial: true) {
                 if gameStats.gameOver {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -110,7 +107,7 @@ struct GameView: View {
     func resetGame() {
         circleCount = gameStats.circlesCount
         minesCount = gameStats.minesCount
-        gameStats.resetGame()
+        // gameStats.resetGame()
     }
 }
 
