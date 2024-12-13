@@ -33,8 +33,9 @@ struct ContentView: View {
                         RestartGame()
                     }
                 } else {
-                    GameOverView(gameStats: gameStats) {
-                        RestartGame()
+                    GameOverView(gameStats: gameStats) {newAppState in 
+                        // RestartGame()
+                        AppStateChange(newState: newAppState)
                     }
                 }
             }
@@ -49,6 +50,14 @@ struct ContentView: View {
     }
     
     func AppStateChange(newState: AppState) {
+        switch newState {
+        case .startScreen:
+            showStartScreenOverlay = true
+        case .gameView:
+            RestartGame()
+        case .gameOver:
+            showGameOverOverlay = true
+        }
         
     }
     
@@ -60,5 +69,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    //ContentView
+    ContentView()
 }

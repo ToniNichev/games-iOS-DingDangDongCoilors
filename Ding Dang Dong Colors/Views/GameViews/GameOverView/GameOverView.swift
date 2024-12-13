@@ -4,7 +4,9 @@ struct GameOverView: View {
     @State private var showGameOverContent = false
     @State private var backgroundOpacity = 0.8
     var gameStats: GameStats
-    let RestartGameAction: () -> Void
+    //let RestartGameAction: () -> Void
+    
+    let AppStateChange: (_ newAppState: AppState) -> Void
     
     var body: some View {
         ZStack {
@@ -16,8 +18,9 @@ struct GameOverView: View {
             
             // "Game Over" text that appears after the background fades in
             if showGameOverContent {
-                GameOverContentView(gameStats: gameStats) {
-                    RestartGameAction()
+                GameOverContentView(gameStats: gameStats) {newAppState in 
+                    //RestartGameAction()
+                    AppStateChange(newAppState)
                 }
             }
         }
@@ -36,7 +39,8 @@ struct GameOverView: View {
     
     @Previewable @State var gameStats = GameStats()
     
-    GameOverView(gameStats:gameStats) {
+    GameOverView(gameStats:gameStats) {newAppState in 
         print("Restarting game ...")
     }
+    
 }

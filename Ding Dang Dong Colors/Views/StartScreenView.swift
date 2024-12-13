@@ -8,11 +8,18 @@
 import SwiftUI
 
 struct StartScreenView: View {
+    @State private var isHowToPlayPresented = false
     let RestartGameAction: () -> Void
     
     
     var body: some View {
         ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [.purple, .pink]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .edgesIgnoringSafeArea(.all)
             Spacer()
             VStack {
                 CustomButton(
@@ -21,9 +28,16 @@ struct StartScreenView: View {
                         print("starting game ...")
                         RestartGameAction()
                 })
+                
+                CustomButton(label: "How To Play", action: {
+                    isHowToPlayPresented = true
+                })
+                .fullScreenCover(isPresented: $isHowToPlayPresented) {
+                    HowToPlayView()
+                }
             }
+            .padding(20)
         }
-        .padding(20)
     }
 }
 

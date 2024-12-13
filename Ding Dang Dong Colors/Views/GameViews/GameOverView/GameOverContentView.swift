@@ -11,7 +11,8 @@ struct GameOverContentView: View {
     @State private var animationComplete = false
     @State private var showConfetti = false
     var gameStats: GameStats
-    let RestartGameAction: () -> Void
+    //let RestartGameAction: () -> Void
+    let AppStateChange: (_ newAppState: AppState) -> Void
     
     var body: some View {
         ZStack {
@@ -35,7 +36,8 @@ struct GameOverContentView: View {
                 
                 VStack(spacing: 20) {
                     CustomButton(label: "Play Again") {
-                        RestartGameAction()
+                        //RestartGameAction()
+                        AppStateChange(.gameView)
                     }
                     
                     CustomButton(label: "View Leaderboard") {
@@ -43,9 +45,7 @@ struct GameOverContentView: View {
                     }
                     
                     CustomButton(label: "Back To Start", colors:[.white, .purple], action:  {
-                        print("2222")
-                        //showStartScreenOverlay = true
-                        //showGameOverOverlay = false
+                        AppStateChange(.startScreen)
                     })
                 }
                 .padding()
@@ -73,7 +73,7 @@ struct GameOverContentView: View {
 #Preview {
     @Previewable @State var gameStats = GameStats()
     
-    GameOverContentView(gameStats: gameStats) {
+    GameOverContentView(gameStats: gameStats) {newAppState in 
         print("Restarting game ...")
     }
 }
