@@ -13,16 +13,16 @@ enum AppState {
     case gameOver
 }
 
-
 struct ContentView: View {
-    @State private var gameStats = GameStats()
+    // Use StateObject instead of State for reference types
+    @StateObject private var gameStats = GameStats()
     @State private var showGameOverOverlay = true
     @State private var showStartScreenOverlay = true
     
     var body: some View {
         ZStack {
-            GameView(
-                gameStats: $gameStats)
+            // Use ObservedObject binding for GameView
+            GameView(gameStats: gameStats)
                 .opacity(showGameOverOverlay ? 0.0 : 1.0)
                 .animation(.easeInOut(duration: 1.0), value: showGameOverOverlay)
 
@@ -33,8 +33,7 @@ struct ContentView: View {
                         RestartGame()
                     }
                 } else {
-                    GameOverView(gameStats: gameStats) {newAppState in 
-                        // RestartGame()
+                    GameOverView(gameStats: gameStats) { newAppState in
                         AppStateChange(newState: newAppState)
                     }
                 }
@@ -47,22 +46,28 @@ struct ContentView: View {
                 }
             }
         }
+        .onChange(of: gameStats.timeRemaining) {
+            // Handle timer running out
+            if gameStats.timeRemaining <= 0 && !gameStats.gameOver {
+                gameStats.loseLife()
+            }
+        }
     }
     
     func AppStateChange(newState: AppState) {
         switch newState {
         case .startScreen:
             showStartScreenOverlay = true
+            gameStats.stopTimer()
         case .gameView:
             RestartGame()
         case .gameOver:
             showGameOverOverlay = true
+            gameStats.stopTimer()
         }
-        
     }
     
     func RestartGame() {
-        print("!")
         gameStats.resetGame()
         showGameOverOverlay = false
     }

@@ -1,7 +1,5 @@
 import SwiftUI
 
-
-
 struct ScoreLevelView: View {
     let score: Int
     let level: Int
@@ -10,19 +8,19 @@ struct ScoreLevelView: View {
     let gradientColors: [Color]
     
     var body: some View {
-        HStack(spacing: 40) {
+        HStack(spacing: 20) {
             // Score UI
             HStack {
                 Image(systemName: "star.fill")
                     .foregroundColor(.yellow)
-                    .font(.system(size: 40))
-                VStack(alignment: .leading, spacing: 5) {
+                    .font(.system(size: 30))
+                VStack(alignment: .leading, spacing: 2) {
                     Text("Score")
                         .font(.caption)
                         .foregroundColor(.white)
                         .shadow(radius: 2)
                     Text("\(score)")
-                        .font(.title)
+                        .font(.title3)
                         .fontWeight(.bold)
                         .foregroundColor(.red)
                         .shadow(radius: 5)
@@ -33,14 +31,14 @@ struct ScoreLevelView: View {
             HStack {
                 Image(systemName: "arrow.up.circle.fill")
                     .foregroundColor(.green)
-                    .font(.system(size: 40))
-                VStack(alignment: .leading, spacing: 5) {
+                    .font(.system(size: 30))
+                VStack(alignment: .leading, spacing: 2) {
                     Text("Level")
                         .font(.caption)
                         .foregroundColor(.white)
                         .shadow(radius: 2)
                     Text("\(level)")
-                        .font(.title)
+                        .font(.title3)
                         .fontWeight(.bold)
                         .foregroundColor(.yellow)
                         .shadow(radius: 5)
@@ -54,15 +52,16 @@ struct ScoreLevelView: View {
                         .font(.caption)
                         .foregroundColor(.white)
                         .shadow(radius: 2)
-                    ForEach(0..<maxLives, id: \.self) { index in
-                        Image(systemName: index < lives ? "heart.fill" : "heart")
-                            .foregroundColor(.red)
-                            .font(.system(size: 10))
+                    HStack(spacing: 2) {
+                        ForEach(0..<maxLives, id: \.self) { index in
+                            Image(systemName: index < lives ? "heart.fill" : "heart")
+                                .foregroundColor(.red)
+                                .font(.system(size: 14))
+                        }
                     }
                     .padding(.top, 0.2)
                 }
             }
-
         }
         .padding()
         .background(

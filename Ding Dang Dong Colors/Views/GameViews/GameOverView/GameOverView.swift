@@ -1,46 +1,94 @@
 import SwiftUI
 
 struct GameOverView: View {
-    @State private var showGameOverContent = false
-    @State private var backgroundOpacity = 0.8
-    var gameStats: GameStats
-    //let RestartGameAction: () -> Void
-    
-    let AppStateChange: (_ newAppState: AppState) -> Void
+    // Use ObservedObject for GameStats
+    @ObservedObject var gameStats: GameStats
+    let onAppStateChange: (AppState) -> Void
     
     var body: some View {
         ZStack {
-            // Full-screen dark overlay with animated opacity
-            Color.black
-                .opacity(backgroundOpacity)
-                .edgesIgnoringSafeArea(.all)
-                .animation(.easeInOut(duration: 1.0), value: backgroundOpacity)
+            // Background
+            LinearGradient(
+                gradient: Gradient(colors: [.black, .red.opacity(0.8)]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .edgesIgnoringSafeArea(.all)
             
-            // "Game Over" text that appears after the background fades in
-            if showGameOverContent {
-                GameOverContentView(gameStats: gameStats) {newAppState in 
-                    //RestartGameAction()
-                    AppStateChange(newAppState)
+            VStack(spacing: 30) {
+                // Game Over Title
+                Text("GAME OVER")
+                    .font(.system(size: 60, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                    .shadow(color: .red, radius: 10, x: 0, y: 0)
+                    .padding(.top, 50)
+                
+                // Final Score
+                VStack(spacing: 15) {
+                    Text("Final Score")
+                        .font(.title2)
+                        .foregroundColor(.white)
+                    
+                    Text("\(gameStats.score)")
+                        .font(.system(size: 80, weight: .bold))
+                        .foregroundColor(.yellow)
+                        .shadow(color: .orange, radius: 5)
                 }
+                
+                // Game Stats
+                VStack(spacing: 25) {
+                    statRow(title: "Level Reached", value: "\(gameStats.level)")
+                    statRow(title: "Lives Used", value: "\(gameStats.maxLives - gameStats.lives) of \(gameStats.maxLives)")
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(Color.black.opacity(0.5))
+                )
+                .padding(.horizontal)
+                
+                Spacer()
+                
+                // Buttons
+                HStack(spacing: 30) {
+                    // Play Again button
+                    CustomButton(label: "Play Again", action: {
+                        onAppStateChange(.gameView)
+                    })
+                    
+                    // Main Menu button
+                    CustomButton(label: "Main Menu", action: {
+                        onAppStateChange(.startScreen)
+                    })
+                }
+                .padding(.bottom, 50)
             }
         }
         .onAppear {
-            // After a delay, show the "Game Over" text
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                withAnimation {
-                    showGameOverContent = true
-                }
-            }
+            gameStats.stopTimer()
         }
+    }
+    
+    private func statRow(title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.white)
+            
+            Spacer()
+            
+            Text(value)
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.orange)
+        }
+        .padding(.horizontal)
     }
 }
 
+// CustomButton is already defined elsewhere in your project
+
 #Preview {
-    
-    @Previewable @State var gameStats = GameStats()
-    
-    GameOverView(gameStats:gameStats) {newAppState in 
-        print("Restarting game ...")
-    }
-    
+    @Previewable let previewGameStats = GameStats()
+    GameOverView(gameStats: previewGameStats) { _ in }
 }
