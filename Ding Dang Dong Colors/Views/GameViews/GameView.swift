@@ -31,12 +31,25 @@ struct GameView: View {
         GeometryReader { geometry in
             ZStack {
                 createBackground()
-                createCircles()
-                createMines()
-                createScoreView().opacity(0.8)
                 
-                // Timer view
-                createTimerView(geometry: geometry)
+                // Main content layout
+                VStack(spacing: 0) {
+                    // Timer at the very top
+                    createTimerView(geometry: geometry)
+                        .padding(.top, 10)
+                    
+                    // Score view below timer
+                    createScoreView()
+                        .opacity(0.8)
+                        .padding(.top, 10)
+                    
+                    // Game area takes remaining space
+                    ZStack {
+                        createCircles()
+                        createMines()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
             .onAppear {
                 circleCount = gameStats.circlesCount
@@ -69,49 +82,41 @@ struct GameView: View {
     }
     
     func createScoreView() -> some View {
-        VStack {
-            ScoreLevelView(
-                score: gameStats.score,
-                level: gameStats.level,
-                lives: gameStats.lives,
-                maxLives: gameStats.maxLives,
-                gradientColors: [.red, .green])
-            Spacer()
-        }
+        ScoreLevelView(
+            score: gameStats.score,
+            level: gameStats.level,
+            lives: gameStats.lives,
+            maxLives: gameStats.maxLives,
+            gradientColors: [.red, .green])
     }
     
     func createTimerView(geometry: GeometryProxy) -> some View {
-        VStack {
-            HStack {
-                // Timer progress bar
-                ZStack(alignment: .leading) {
-                    Rectangle()
-                        .frame(height: 10)
-                        .opacity(0.3)
-                        .foregroundColor(.gray)
-                    
-                    Rectangle()
-                        .frame(width: getTimerWidth(geometry: geometry.size.width - 110), height: 10)
-                        .foregroundColor(timerProgressColor)
-                        .animation(.linear, value: gameStats.timeRemaining)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 5))
-                .frame(maxWidth: .infinity)
+        HStack {
+            // Timer progress bar
+            ZStack(alignment: .leading) {
+                Rectangle()
+                    .frame(height: 10)
+                    .opacity(0.3)
+                    .foregroundColor(.gray)
                 
-                // Time remaining text
-                Text("\(gameStats.timeRemaining)s")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding(8)
-                    .background(timerProgressColor)
-                    .cornerRadius(10)
-                    .shadow(radius: 3)
+                Rectangle()
+                    .frame(width: getTimerWidth(geometry: geometry.size.width - 110), height: 10)
+                    .foregroundColor(timerProgressColor)
+                    .animation(.linear, value: gameStats.timeRemaining)
             }
-            .padding(.horizontal)
-            .padding(.top, 10)
+            .clipShape(RoundedRectangle(cornerRadius: 5))
+            .frame(maxWidth: .infinity)
             
-            Spacer()
+            // Time remaining text
+            Text("\(gameStats.timeRemaining)s")
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(8)
+                .background(timerProgressColor)
+                .cornerRadius(10)
+                .shadow(radius: 3)
         }
+        .padding(.horizontal)
     }
     
     func getTimerWidth(geometry: CGFloat) -> CGFloat {

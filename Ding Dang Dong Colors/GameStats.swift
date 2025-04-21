@@ -20,7 +20,7 @@ class GameStats: ObservableObject {
     @Published var gameOver: Bool = false
     
     // Timer properties
-    @Published var timeRemaining: Int = 30
+    @Published var timeRemaining: Int = 15  // Starting with 15 seconds
     @Published var isTimerRunning: Bool = false
     
     private var timer: AnyCancellable?
@@ -82,12 +82,8 @@ class GameStats: ObservableObject {
                 if self.timeRemaining > 0 {
                     self.timeRemaining -= 1
                 } else {
-                    // Time's up - lose a life
-                    self.loseLife()
-                    if !self.gameOver {
-                        // If still alive, reset timer for current level
-                        self.timeRemaining = self.getLevelTimeLimit()
-                    }
+                    // Time's up - end the game
+                    self.endGame()
                 }
             }
     }
@@ -109,10 +105,16 @@ class GameStats: ObservableObject {
         }
     }
     
+    // New method to end the game when time runs out
+    func endGame() {
+        gameOver = true
+        stopTimer()
+    }
+    
     // Calculate time limit based on level
     func getLevelTimeLimit() -> Int {
-        // Start with 30 seconds at level 1, decrease by 2 seconds per level
-        // with a minimum of 15 seconds for higher levels
-        return max(15, 30 - (level - 1) * 2)
+        // Start with 15 seconds at level 1, decrease by 1 second per level
+        // with a minimum of 8 seconds for higher levels
+        return max(8, 15 - (level - 1))
     }
 }

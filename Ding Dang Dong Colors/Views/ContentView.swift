@@ -46,12 +46,6 @@ struct ContentView: View {
                 }
             }
         }
-        .onChange(of: gameStats.timeRemaining) {
-            // Handle timer running out
-            if gameStats.timeRemaining <= 0 && !gameStats.gameOver {
-                gameStats.loseLife()
-            }
-        }
     }
     
     func AppStateChange(newState: AppState) {
