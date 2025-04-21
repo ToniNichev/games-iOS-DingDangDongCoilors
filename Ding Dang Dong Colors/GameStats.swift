@@ -6,14 +6,15 @@
 //
 
 struct GameStats {
-    let circlesCount = 1
-    let minesCount = 1
+    let circlesCount = 3
+    let minesCount = 3
     
     var score: Int = 0
     var level: Int = 1
     var lives: Int = 3
     var maxLives: Int = 3
     var gameOver: Bool = false
+    
     
     mutating func incrementScore(by points: Int) {
         score += points

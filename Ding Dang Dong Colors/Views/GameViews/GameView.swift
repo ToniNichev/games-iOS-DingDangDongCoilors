@@ -13,6 +13,13 @@ struct GameView: View {
     @State private var circleCount : Int = 1
     @State private var minesCount : Int = 1
     
+    @State private var minCircleRadius = 50.0
+    @State private var maxCircleRadius = 100.0
+    
+    @State private var minMineRadius = 50.0
+    @State private var maxMineRadius = 100.0
+                
+    
     var movementSpeed: Double {
         max(0.5, 2.5 - Double(gameStats.level) * 0.3) // Faster speed as score increases
     }
@@ -67,8 +74,8 @@ struct GameView: View {
         MovingCirclesView(
             circlesCount: minesCount,
             movementInterval: movementSpeed,
-            minRadius: 50,
-            maxRadius: 100,
+            minRadius: minMineRadius,
+            maxRadius: maxMineRadius,
             animationType: .linear(duration: movementSpeed),
             removeCircleOnTapped: false,
             fixedCircleColor: .black
@@ -86,8 +93,8 @@ struct GameView: View {
         return MovingCirclesView(
             circlesCount: circleCount,
             movementInterval: movementSpeed,
-            minRadius: 50,
-            maxRadius: 100,
+            minRadius: minCircleRadius,
+            maxRadius: maxMineRadius,
             animationType: .linear(duration: movementSpeed)
         )
         { circle in
