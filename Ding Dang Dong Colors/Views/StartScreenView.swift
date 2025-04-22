@@ -12,6 +12,7 @@ struct StartScreenView: View {
     let RestartGameAction: () -> Void
     
     
+    
     var body: some View {
         ZStack {
             LinearGradient(
@@ -38,8 +39,7 @@ struct StartScreenView: View {
                 }
                 Spacer()
                 
-                // Test Ad Unit ID
-                BannerAd(adUnitID: "ca-app-pub-3940256099942544/2934735716")
+                BannerAd(adUnitID: AdConfig.bannerAdUnitId)
                     .frame(height: 50)
             }
             .padding(20)

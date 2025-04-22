@@ -2,7 +2,13 @@ import GoogleMobileAds
 
 class InterstitialAdManager: NSObject, ObservableObject, FullScreenContentDelegate {
     @Published var interstitialAd: InterstitialAd?
-    let adUnitID = "ca-app-pub-3940256099942544/4411468910" // Test ID
+    let adUnitID: String
+    
+    init(adUnitID: String = AdConfig.gameOverInterstitialAdUnitId) {
+        self.adUnitID = adUnitID
+        super.init()
+    }
+    
     
     func loadAd() {
         InterstitialAd.load(with: adUnitID, request: Request()) { [weak self] ad, error in
