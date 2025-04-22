@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import GoogleMobileAds
 
 @main
 struct Ding_Dang_Dong_ColorsApp: App {
+    init() {
+        MobileAds.shared.start(completionHandler: nil)
+    }
     var body: some Scene {
         WindowGroup {
             ContentView()

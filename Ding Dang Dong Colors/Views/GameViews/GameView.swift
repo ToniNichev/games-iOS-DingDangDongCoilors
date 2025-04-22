@@ -6,10 +6,15 @@
 //
 
 import SwiftUI
+import GoogleMobileAds
+
 
 struct GameView: View {
     // Use ObservedObject instead of Binding for reference types
     @ObservedObject var gameStats: GameStats
+    
+    // Add the interstitial ad manager
+    @StateObject private var adManager = InterstitialAdManager()
 
     @State private var circleCount : Int = 1
     @State private var minesCount : Int = 1
@@ -49,12 +54,15 @@ struct GameView: View {
                         createMines()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
                 }
             }
             .onAppear {
                 circleCount = gameStats.circlesCount
                 minesCount = gameStats.minesCount
                 gameStats.startTimer()
+                // Load the interstitial ad when the view appears
+                adManager.loadAd()
             }
             .onChange(of: gameStats.timeRemaining) {
                 // Update timer color based on remaining time
@@ -62,6 +70,11 @@ struct GameView: View {
             }
             .onChange(of: gameStats.gameOver, initial: true) {
                 if gameStats.gameOver {
+                    // Show the interstitial ad when game is over
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        adManager.showAd()
+                    }
+                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                         // delay reseting the game so it won't show more circles during fade effect
                         resetGame()

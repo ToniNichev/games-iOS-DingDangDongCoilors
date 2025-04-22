@@ -22,6 +22,7 @@ struct StartScreenView: View {
             .edgesIgnoringSafeArea(.all)
             Spacer()
             VStack {
+                Spacer()
                 CustomButton(
                     label: "Start Game",
                     action: {
@@ -35,6 +36,11 @@ struct StartScreenView: View {
                 .fullScreenCover(isPresented: $isHowToPlayPresented) {
                     HowToPlayView()
                 }
+                Spacer()
+                
+                // Test Ad Unit ID
+                BannerAd(adUnitID: "ca-app-pub-3940256099942544/2934735716")
+                    .frame(height: 50)
             }
             .padding(20)
         }
