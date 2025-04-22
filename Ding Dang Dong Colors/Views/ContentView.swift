@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import GameKit
 
 enum AppState {
     case startScreen
@@ -45,6 +46,12 @@ struct ContentView: View {
                     showGameOverOverlay = true
                 }
             }
+        }
+        .sheet(isPresented: $gameStats.showLeaderboard) {
+            GameCenterView()
+        }
+        .onAppear {
+            gameStats.authenticateGameCenter()
         }
     }
     

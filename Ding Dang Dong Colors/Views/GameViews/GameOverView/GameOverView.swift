@@ -1,7 +1,7 @@
 import SwiftUI
+import GameKit
 
 struct GameOverView: View {
-    // Use ObservedObject for GameStats
     @ObservedObject var gameStats: GameStats
     let onAppStateChange: (AppState) -> Void
     
@@ -38,7 +38,7 @@ struct GameOverView: View {
                 // Game Stats
                 VStack(spacing: 25) {
                     statRow(title: "Level Reached", value: "\(gameStats.level)")
-                    statRow(title: "Lives Used", value: "\(gameStats.maxLives - gameStats.lives) of \(gameStats.maxLives)")
+                    statRow(title: "Time Ran Out", value: gameStats.timeRemaining <= 0 ? "Yes" : "No")
                 }
                 .padding()
                 .background(
@@ -48,6 +48,15 @@ struct GameOverView: View {
                 .padding(.horizontal)
                 
                 Spacer()
+                
+                // Game Center Button (if authenticated)
+                if gameStats.gameCenterEnabled {
+                    CustomButton(label: "Leaderboard", action: {
+                        // Properly access the property through the wrapper
+                        gameStats.showGameCenter()
+                    })
+                    .padding(.bottom, 20)
+                }
                 
                 // Buttons
                 HStack(spacing: 30) {
@@ -66,6 +75,11 @@ struct GameOverView: View {
         }
         .onAppear {
             gameStats.stopTimer()
+            
+            // Submit score to Game Center when game over screen appears
+            if gameStats.gameCenterEnabled {
+                gameStats.submitScoreToGameCenter()
+            }
         }
     }
     
@@ -85,8 +99,6 @@ struct GameOverView: View {
         .padding(.horizontal)
     }
 }
-
-// CustomButton is already defined elsewhere in your project
 
 #Preview {
     @Previewable let previewGameStats = GameStats()
