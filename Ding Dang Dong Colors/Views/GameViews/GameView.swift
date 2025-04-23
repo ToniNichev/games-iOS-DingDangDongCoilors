@@ -27,6 +27,10 @@ struct GameView: View {
     
     // Timer animation properties
     @State private var timerProgressColor: Color = .green
+    
+    // Heart animation properties
+    @State private var showHeartAnimation: Bool = false
+    @State private var heartCollectedPosition: CGPoint = .zero
                 
     var movementSpeed: Double {
         max(0.5, 2.5 - Double(gameStats.level) * 0.3) // Faster speed as score increases
@@ -52,9 +56,42 @@ struct GameView: View {
                     ZStack {
                         createCircles()
                         createMines()
+                        // Add the falling heart view
+                        FallingHeartView(gameLevel: $gameStats.level) {
+                            // Handle heart tapped - add a life
+                            gameStats.gainLife()
+                            
+                            // Visual feedback for collecting a heart
+                            withAnimation(.spring(response: 0.6, dampingFraction: 0.5)) {
+                                showHeartAnimation = true
+                            }
+                            
+                            // Hide the animation after a delay
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                showHeartAnimation = false
+                            }
+                        }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    
+                }
+                // Visual feedback when collecting a heart
+                if showHeartAnimation {
+                    ZStack {
+                        // Heart particle effect
+                        HeartParticleView(position: CGPoint(x: geometry.size.width/2, y: geometry.size.height/2))                        
+                        // Text notification
+                        VStack {
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.red)
+                            Text("+1 Life!")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .shadow(radius: 3)
+                        }
+                        .transition(.scale.combined(with: .opacity))
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 }
             }
             .onAppear {
