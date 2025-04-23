@@ -150,6 +150,15 @@ class GameStats: ObservableObject {
         return max(8, 15 - (level - 1))
     }
     
+    // Function to add time to the timer
+    func addTime(seconds: Int) {
+        // Get the current level's time limit
+        let maxTime = getLevelTimeLimit()
+        
+        // Add the seconds, but don't exceed the level's max time plus a small buffer
+        timeRemaining = min(maxTime + 5, timeRemaining + seconds)
+    }
+    
     // MARK: - Game Center Methods
     
     func authenticateGameCenter() {

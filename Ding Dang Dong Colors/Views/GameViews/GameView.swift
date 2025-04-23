@@ -10,7 +10,6 @@ import GoogleMobileAds
 
 
 struct GameView: View {
-    // Use ObservedObject instead of Binding for reference types
     @ObservedObject var gameStats: GameStats
     
     // Add the interstitial ad manager
@@ -31,6 +30,10 @@ struct GameView: View {
     // Heart animation properties
     @State private var showHeartAnimation: Bool = false
     @State private var heartCollectedPosition: CGPoint = .zero
+    
+    // Clock animation properties
+    @State private var showClockAnimation: Bool = false
+    @State private var timeBonusAmount: Int = 0
                 
     var movementSpeed: Double {
         max(0.5, 2.5 - Double(gameStats.level) * 0.3) // Faster speed as score increases
@@ -56,6 +59,7 @@ struct GameView: View {
                     ZStack {
                         createCircles()
                         createMines()
+                        
                         // Add the falling heart view
                         FallingHeartView(gameLevel: $gameStats.level) {
                             // Handle heart tapped - add a life
@@ -71,9 +75,27 @@ struct GameView: View {
                                 showHeartAnimation = false
                             }
                         }
+                        
+                        // Add the falling clock view
+                        FallingClockView(gameLevel: $gameStats.level) { timeBonus in
+                            // Handle clock tapped - add time to timer
+                            gameStats.addTime(seconds: timeBonus)
+                            timeBonusAmount = timeBonus
+                            
+                            // Visual feedback for collecting a clock
+                            withAnimation(.spring(response: 0.6, dampingFraction: 0.5)) {
+                                showClockAnimation = true
+                            }
+                            
+                            // Hide the animation after a delay
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                showClockAnimation = false
+                            }
+                        }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                
                 // Visual feedback when collecting a heart
                 if showHeartAnimation {
                     ZStack {
@@ -85,6 +107,30 @@ struct GameView: View {
                                 .font(.system(size: 40))
                                 .foregroundColor(.red)
                             Text("+1 Life!")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .shadow(radius: 3)
+                        }
+                        .transition(.scale.combined(with: .opacity))
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                }
+                
+                // Visual feedback when collecting a clock
+                if showClockAnimation {
+                    ZStack {
+                        // Clock particle effect
+                        ClockParticleView(
+                            position: CGPoint(x: geometry.size.width/2, y: geometry.size.height/2),
+                            timeBonus: timeBonusAmount
+                        )
+                        
+                        // Text notification
+                        VStack {
+                            Image(systemName: "clock.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.blue)
+                            Text("+\(timeBonusAmount)s")
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .shadow(radius: 3)
