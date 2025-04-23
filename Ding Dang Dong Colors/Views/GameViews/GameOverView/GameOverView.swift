@@ -70,7 +70,12 @@ struct GameOverView: View {
                         onAppStateChange(.startScreen)
                     })
                 }
-                .padding(.bottom, 50)
+                .padding(10)
+                
+                Spacer()
+                
+                BannerAd(adUnitID: AdConfig.GameOverBannerAdUnitId)
+                    .frame(height: 50)
             }
         }
         .onAppear {

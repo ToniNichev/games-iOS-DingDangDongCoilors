@@ -39,7 +39,7 @@ struct StartScreenView: View {
                 }
                 Spacer()
                 
-                BannerAd(adUnitID: AdConfig.bannerAdUnitId)
+                BannerAd(adUnitID: AdConfig.startGameBannerAdUnitId)
                     .frame(height: 50)
             }
             .padding(20)

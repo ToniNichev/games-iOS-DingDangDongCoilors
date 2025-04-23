@@ -12,8 +12,11 @@ struct AdConfig {
     static let appId = "ca-app-pub-3940256099942544~1458002511" // Test ID
     
     // MARK: - Banner Ads
-    static let bannerAdUnitId = "ca-app-pub-3940256099942544/2934735716" // Test ID
-    // static let bannerAdUnitId = "ca-app-pub-6611665849437983/5357921819"
+    static let startGameBannerAdUnitId = "ca-app-pub-3940256099942544/2934735716" // Test ID
+    // static let startGameBbannerAdUnitId = "ca-app-pub-6611665849437983/5357921819"
+    
+    static let GameOverBannerAdUnitId = "ca-app-pub-3940256099942544/2934735716" // Test ID
+    // static let GameOverBannerAdUnitId = "ca-app-pub-6611665849437983/9070237439"
     
     // MARK: - Interstitial Ads
     static let gameOverInterstitialAdUnitId = "ca-app-pub-3940256099942544/4411468910" // Test ID
