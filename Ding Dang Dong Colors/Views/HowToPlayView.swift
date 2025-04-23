@@ -18,7 +18,7 @@ struct HowToPlayView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .background(
                             LinearGradient(
-                                gradient: Gradient(colors: [.blue, .purple]),
+                                gradient: Gradient(colors: [.red, .green]),
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -30,7 +30,7 @@ struct HowToPlayView: View {
                 
                 // Welcome Section
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Welcome to Matching Colors!")
+                    Text("Welcome to Ding Dang Dong Colors!")
                         .font(.title2)
                         .fontWeight(.semibold)
                         .foregroundColor(.purple)
@@ -39,7 +39,7 @@ struct HowToPlayView: View {
                         .font(.headline)
                         .foregroundColor(.orange)
                     
-                    Text("Match the falling shapes with the correct shapes and colors before they reach the bottom of the screen. The game speeds up with each level, so stay focused!")
+                    Text("Tap colored circles to score points while avoiding black mines. As you progress through levels, the game gets faster and more challenging. Race against the timer and collect power-ups to survive longer!")
                         .font(.body)
                         .padding()
                         .background(
@@ -49,17 +49,17 @@ struct HowToPlayView: View {
                 }
                 .padding(.horizontal)
                 
-                // How to Play Section
+                // Basic Game Rules
                 VStack(alignment: .leading, spacing: 15) {
-                    Text("How to Play:")
+                    Text("Basic Game Rules:")
                         .font(.headline)
                         .foregroundColor(.red)
                     
                     VStack(alignment: .leading, spacing: 10) {
-                        Label("1. Tap on the screen to change the bottom shape and color to match the falling one.", systemImage: "hand.tap.fill")
-                        Label("2. The shapes will appear faster as you progress to higher levels.", systemImage: "speedometer")
-                        Label("3. Tap on the moving circles in the background to earn bonus points.", systemImage: "circle.fill")
-                        Label("4. Compete for the highest score on the leaderboard!", systemImage: "star.fill")
+                        Label("Tap on colored circles to earn points", systemImage: "hand.tap.fill")
+                        Label("Avoid tapping black circles (mines) which will cost you a life", systemImage: "xmark.circle.fill")
+                        Label("Clear all colored circles to advance to the next level", systemImage: "arrow.up.circle.fill")
+                        Label("Keep an eye on the timer at the top - when it runs out, the game ends", systemImage: "clock.fill")
                     }
                     .padding()
                     .background(
@@ -69,16 +69,48 @@ struct HowToPlayView: View {
                 }
                 .padding(.horizontal)
                 
-                // Game Controls Section
+                // Power-Ups Section
                 VStack(alignment: .leading, spacing: 15) {
-                    Text("Game Controls:")
+                    Text("Power-Ups:")
                         .font(.headline)
                         .foregroundColor(.blue)
                     
-                    VStack(alignment: .leading, spacing: 10) {
-                        Label("• Tap: Change the bottom shape and color to match the falling one.", systemImage: "hand.point.up.left.fill")
-                        Label("• Tap Moving Circles: Earn bonus points by tapping the moving circles.", systemImage: "hand.tap.fill")
-                        Label("• Restart: Tap the Restart button when the game ends to try again.", systemImage: "arrow.clockwise")
+                    VStack(alignment: .leading, spacing: 15) {
+                        // Heart power-up
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "heart.fill")
+                                .foregroundColor(.red)
+                                .font(.system(size: 24))
+                                .frame(width: 30)
+                            
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("Falling Hearts")
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                                
+                                Text("Tap on falling hearts to gain an extra life. Hearts fall less frequently in higher levels.")
+                                    .font(.body)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        
+                        // Clock power-up
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "clock.fill")
+                                .foregroundColor(.blue)
+                                .font(.system(size: 24))
+                                .frame(width: 30)
+                            
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text("Falling Clocks")
+                                    .font(.subheadline)
+                                    .fontWeight(.bold)
+                                
+                                Text("Tap on falling clocks to add extra seconds to your timer. The time bonus decreases in higher levels.")
+                                    .font(.body)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
                     }
                     .padding()
                     .background(
@@ -88,17 +120,17 @@ struct HowToPlayView: View {
                 }
                 .padding(.horizontal)
                 
-                // Tips Section
+                // Difficulty Progression
                 VStack(alignment: .leading, spacing: 15) {
-                    Text("Tips:")
+                    Text("Level Progression:")
                         .font(.headline)
                         .foregroundColor(.green)
                     
                     VStack(alignment: .leading, spacing: 10) {
-                        Label("• Focus on speed and accuracy—each match earns points!", systemImage: "bolt.fill")
-                        Label("• Tap the moving circles for bonus points.", systemImage: "gift.fill")
-                        Label("• Practice to improve your reaction time and reach higher levels.", systemImage: "flame.fill")
-                        Label("• Keep an eye on your score and level at the top of the screen.", systemImage: "eye.fill")
+                        Label("Each level adds more circles and mines", systemImage: "plus.circle.fill")
+                        Label("Movement speed increases with each level", systemImage: "hare.fill")
+                        Label("Timer duration decreases as you progress", systemImage: "timer")
+                        Label("Power-ups become rarer and fall faster in higher levels", systemImage: "arrow.down.circle.fill")
                     }
                     .padding()
                     .background(
@@ -108,12 +140,32 @@ struct HowToPlayView: View {
                 }
                 .padding(.horizontal)
                 
+                // Tips Section
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("Pro Tips:")
+                        .font(.headline)
+                        .foregroundColor(.yellow)
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Prioritize catching hearts when low on lives", systemImage: "heart.fill")
+                        Label("Go for clock power-ups when the timer is running low", systemImage: "clock.fill")
+                        Label("Balance risk and reward - sometimes it's better to focus on clearing circles than chasing power-ups", systemImage: "scale.3d")
+                        Label("Compete for high scores on the Game Center leaderboard!", systemImage: "crown.fill")
+                    }
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.purple.opacity(0.1))
+                    )
+                }
+                .padding(.horizontal)
+                
                 Spacer()
             }
             .padding()
         }
         .background(
-            LinearGradient(gradient: Gradient(colors: [Color.white, Color.blue.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [Color.white, Color.red.opacity(0.1), Color.green.opacity(0.1)]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
         )
         .overlay(
