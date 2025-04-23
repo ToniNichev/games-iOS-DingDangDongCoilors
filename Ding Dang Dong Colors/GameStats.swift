@@ -31,6 +31,9 @@ class GameStats: ObservableObject {
     // Leaderboard IDs - using your specific weekly leaderboard ID
     let weeklyLeaderboardID = "ding_dang_dong_colors_weekly"
     
+    // Callback for when time runs out
+    var onTimeUp: (() -> Void)?
+    
     private var timer: AnyCancellable?
     
     init() {
@@ -132,14 +135,27 @@ class GameStats: ObservableObject {
         }
     }
     
-    // New method to end the game when time runs out
     func endGame() {
-        gameOver = true
-        stopTimer()
+        // Call the time's up callback if it exists
+        onTimeUp?()
         
-        // Submit final score to Game Center
-        if gameCenterEnabled {
-            submitScoreToGameCenter()
+        // Instead of ending the game directly, lose a life
+        loseLife()
+        
+        // If we still have lives left after losing one
+        if lives > 0 {
+            // Reset the timer for the current level and continue
+            timeRemaining = getLevelTimeLimit()
+            resumeTimer()
+        } else {
+            // If no lives left, then actually end the game
+            gameOver = true
+            stopTimer()
+            
+            // Submit final score to Game Center
+            if gameCenterEnabled {
+                submitScoreToGameCenter()
+            }
         }
     }
     

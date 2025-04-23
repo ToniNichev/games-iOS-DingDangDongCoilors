@@ -34,6 +34,10 @@ struct GameView: View {
     // Clock animation properties
     @State private var showClockAnimation: Bool = false
     @State private var timeBonusAmount: Int = 0
+    
+    @State private var isTimerWarning: Bool = false
+    @State private var timerWarningTimer: Timer? = nil
+    @State private var showTimeUpAnimation: Bool = false
                 
     var movementSpeed: Double {
         max(0.5, 2.5 - Double(gameStats.level) * 0.3) // Faster speed as score increases
@@ -139,10 +143,54 @@ struct GameView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 }
+                
+                if showTimeUpAnimation {
+                    ZStack {
+                        // Background overlay
+                        Color.black.opacity(0.7)
+                            .edgesIgnoringSafeArea(.all)
+                        
+                        // Warning message
+                        VStack(spacing: 20) {
+                            Image(systemName: "timer")
+                                .font(.system(size: 50))
+                                .foregroundColor(.red)
+                            
+                            Text("Time's Up!")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            
+                            Text("-1 Life")
+                                .font(.title)
+                                .foregroundColor(.red)
+                                .padding(.vertical, 5)
+                                .padding(.horizontal, 20)
+                                .background(
+                                    Capsule()
+                                        .fill(Color.white)
+                                )
+                        }
+                        .padding(40)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.black.opacity(0.8))
+                        )
+                        .transition(.scale.combined(with: .opacity))
+                    }
+                    .zIndex(10) // Ensure this appears on top of everything
+                }
             }
             .onAppear {
                 circleCount = gameStats.circlesCount
                 minesCount = gameStats.minesCount
+                
+                // Set up the callback for when time runs out
+                gameStats.onTimeUp = {
+                    // Call our function to show the time's up animation
+                    showTimeUpWarning()
+                }
+                
                 gameStats.startTimer()
                 // Load the interstitial ad when the view appears
                 adManager.loadAd()
@@ -199,6 +247,8 @@ struct GameView: View {
                     .frame(width: getTimerWidth(geometry: geometry.size.width - 110), height: 10)
                     .foregroundColor(timerProgressColor)
                     .animation(.linear, value: gameStats.timeRemaining)
+                    // Apply scaling animation when timer is in warning state
+                    .scaleEffect(y: isTimerWarning ? 1.2 : 1.0, anchor: .center)
             }
             .clipShape(RoundedRectangle(cornerRadius: 5))
             .frame(maxWidth: .infinity)
@@ -211,6 +261,8 @@ struct GameView: View {
                 .background(timerProgressColor)
                 .cornerRadius(10)
                 .shadow(radius: 3)
+                // Apply subtle pulsing animation when timer is in warning state
+                .scaleEffect(isTimerWarning ? 1.1 : 1.0)
         }
         .padding(.horizontal)
     }
@@ -228,10 +280,14 @@ struct GameView: View {
         
         if percentage > 0.6 {
             timerProgressColor = .green
+            stopTimerWarning()
         } else if percentage > 0.3 {
             timerProgressColor = .yellow
+            stopTimerWarning()
         } else {
             timerProgressColor = .red
+            // Start warning animation when timer is in the red zone
+            startTimerWarning()
         }
     }
     
@@ -277,6 +333,40 @@ struct GameView: View {
         circleCount = gameStats.circlesCount
         minesCount = gameStats.minesCount
         // gameStats.resetGame()
+    }
+    
+    func startTimerWarning() {
+        // Only start the warning animation if not already showing
+        if !isTimerWarning {
+            isTimerWarning = true
+            
+            // Create a timer that toggles the warning every 0.5 seconds
+            timerWarningTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    // This will make the timer bar pulse between normal and 20% larger
+                    self.isTimerWarning.toggle()
+                }
+            }
+        }
+    }
+
+    func stopTimerWarning() {
+        isTimerWarning = false
+        timerWarningTimer?.invalidate()
+        timerWarningTimer = nil
+    }
+    
+    func showTimeUpWarning() {
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.5)) {
+            showTimeUpAnimation = true
+        }
+        
+        // Hide the animation after a delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation {
+                showTimeUpAnimation = false
+            }
+        }
     }
 }
 
