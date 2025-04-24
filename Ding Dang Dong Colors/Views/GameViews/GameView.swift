@@ -35,12 +35,21 @@ struct GameView: View {
     @State private var showClockAnimation: Bool = false
     @State private var timeBonusAmount: Int = 0
     
+    // Speed Potion animation properties
+    @State private var showSpeedPotionAnimation: Bool = false
+    
     @State private var isTimerWarning: Bool = false
     @State private var timerWarningTimer: Timer? = nil
     @State private var showTimeUpAnimation: Bool = false
                 
     var movementSpeed: Double {
-        max(0.5, 2.5 - Double(gameStats.level) * 0.3) // Faster speed as score increases
+        // Use the temporary level if it's set, otherwise use the current level
+        let levelForSpeed = gameStats.temporarySpeedLevel ?? gameStats.level
+        
+        // Original speed calculation based on level
+        // return max(0.5, 2.5 - Double(levelForSpeed) * 0.3)
+        // Optional alternative with logarithmic scaling for even more gradual increases at higher levels
+        return max(0.5, 2.5 - (0.3 * log(Double(levelForSpeed) + 1)))
     }
     
     var body: some View {
@@ -58,6 +67,11 @@ struct GameView: View {
                     createScoreView()
                         .opacity(0.8)
                         .padding(.top, 10)
+                    
+                    // Speed indicator when active
+                    createSpeedIndicator()
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 5)
                     
                     // Game area takes remaining space
                     ZStack {
@@ -96,6 +110,22 @@ struct GameView: View {
                                 showClockAnimation = false
                             }
                         }
+                        
+                        // Add the falling speed potion view
+                        FallingSpeedPotionView(gameLevel: $gameStats.level) {
+                            // Handle speed potion tapped - temporarily reset game speed to level 1
+                            gameStats.resetSpeedToLevel1()
+                            
+                            // Visual feedback for collecting a speed potion
+                            withAnimation(.spring(response: 0.6, dampingFraction: 0.5)) {
+                                showSpeedPotionAnimation = true
+                            }
+                            
+                            // Hide the animation after a delay
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                showSpeedPotionAnimation = false
+                            }
+                        }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -104,7 +134,7 @@ struct GameView: View {
                 if showHeartAnimation {
                     ZStack {
                         // Heart particle effect
-                        HeartParticleView(position: CGPoint(x: geometry.size.width/2, y: geometry.size.height/2))                        
+                        HeartParticleView(position: CGPoint(x: geometry.size.width/2, y: geometry.size.height/2))
                         // Text notification
                         VStack {
                             Image(systemName: "heart.fill")
@@ -135,6 +165,29 @@ struct GameView: View {
                                 .font(.system(size: 40))
                                 .foregroundColor(.blue)
                             Text("+\(timeBonusAmount)s")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .shadow(radius: 3)
+                        }
+                        .transition(.scale.combined(with: .opacity))
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                }
+                
+                // Visual feedback when collecting a speed potion
+                if showSpeedPotionAnimation {
+                    ZStack {
+                        // Speed potion particle effect
+                        SpeedPotionParticleView(
+                            position: CGPoint(x: geometry.size.width/2, y: geometry.size.height/2)
+                        )
+                        
+                        // Text notification
+                        VStack {
+                            Image(systemName: "arrow.counterclockwise.circle.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(.purple)
+                            Text("Speed Reset!")
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .shadow(radius: 3)
@@ -232,6 +285,35 @@ struct GameView: View {
             lives: gameStats.lives,
             maxLives: gameStats.maxLives,
             gradientColors: [.red, .green])
+    }
+    
+    func createSpeedIndicator() -> some View {
+        // Only show if temporary speed level is active
+        Group {
+            if gameStats.temporarySpeedLevel != nil {
+                HStack(spacing: 5) {
+                    Image(systemName: "arrow.counterclockwise.circle.fill")
+                        .foregroundColor(.purple)
+                        .font(.system(size: 14))
+                    
+                    Text("Level 1 Speed")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                    
+                    // Add a countdown timer
+                    TimerView(seconds: gameStats.temporarySpeedLevel != nil ? 15 : 0)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(Color.black.opacity(0.6))
+                        .shadow(color: .purple.opacity(0.5), radius: 5)
+                )
+                .transition(.opacity)
+                .animation(.easeInOut, value: gameStats.temporarySpeedLevel != nil)
+            }
+        }
     }
     
     func createTimerView(geometry: GeometryProxy) -> some View {

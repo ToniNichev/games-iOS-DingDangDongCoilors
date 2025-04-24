@@ -28,6 +28,9 @@ class GameStats: ObservableObject {
     @Published var gameCenterEnabled: Bool = false
     @Published var showLeaderboard: Bool = false
     
+    @Published var temporarySpeedLevel: Int? = nil  // If set, use this level for speed calculations
+    private var speedResetTimer: Timer?
+    
     // Leaderboard IDs - using your specific weekly leaderboard ID
     let weeklyLeaderboardID = "ding_dang_dong_colors_weekly"
     
@@ -94,9 +97,20 @@ class GameStats: ObservableObject {
         lives = maxLives
         gameOver = false
         
+        score = 0
+        level = 1
+        lives = maxLives
+        gameOver = false
+        
+        // Reset speed
+        temporarySpeedLevel = nil
+        speedResetTimer?.invalidate()
+        speedResetTimer = nil
+        
         // Reset and start timer
         timeRemaining = getLevelTimeLimit()
         startTimer()
+
     }
     
     // Timer-related methods
@@ -173,6 +187,25 @@ class GameStats: ObservableObject {
         
         // Add the seconds, but don't exceed the level's max time plus a small buffer
         timeRemaining = min(maxTime + 5, timeRemaining + seconds)
+    }
+    
+    func resetSpeedToLevel1() {
+        // First cancel any existing reset timer
+        speedResetTimer?.invalidate()
+        
+        // Store the current level but temporarily use level 1 for speed calculations
+        temporarySpeedLevel = 1
+        
+        // Set a timer to restore normal speed after a delay
+        let resetDuration: TimeInterval = 15.0  // 15 seconds of slower speed
+        
+        // Create a timer to reset back to normal speed
+        speedResetTimer = Timer.scheduledTimer(withTimeInterval: resetDuration, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            
+            // Reset back to normal speed
+            self.temporarySpeedLevel = nil
+        }
     }
     
     // MARK: - Game Center Methods
